@@ -8,10 +8,8 @@ import { filterRestaurants } from "@/lib/filters";
 import {
   getManualRestaurants,
   getRestaurantMeta,
-  getStoredFilters,
   isSkippedToday,
   setRestaurantMeta,
-  setStoredFilters,
   type RestaurantMeta,
 } from "@/lib/storage";
 import type { Filters, Restaurant } from "@/types/restaurant";
@@ -42,7 +40,6 @@ export default function RestaurantsPage() {
   const [amapRestaurants, setAmapRestaurants] = useState<Restaurant[]>([]);
   const [hint, setHint] = useState<string | null>(null);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [hydrated, setHydrated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,10 +52,8 @@ export default function RestaurantsPage() {
   };
 
   useEffect(() => {
-    setFilters(getStoredFilters(DEFAULT_FILTERS));
     setMeta(getRestaurantMeta());
     setManualRestaurants(getManualRestaurants());
-    setHydrated(true);
   }, []);
 
   useEffect(() => {
@@ -86,14 +81,8 @@ export default function RestaurantsPage() {
   }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
-    setStoredFilters(filters);
-  }, [filters, hydrated]);
-
-  useEffect(() => {
-    if (!hydrated) return;
     setRestaurantMeta(meta);
-  }, [meta, hydrated]);
+  }, [meta]);
 
   useEffect(() => {
     return () => {
