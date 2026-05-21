@@ -208,7 +208,6 @@ export default function HomeClient({ initialRestaurants, initialError, initialRe
             <div>
               <p className="text-sm font-semibold text-orange-500">{greeting}</p>
               <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-900 md:text-6xl">今天吃什么？</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500 md:text-base">按你的偏好和附近餐厅，帮你快速选出今天更值得去的一家。保留轻松感，但现在更适合在 PC 网页上看和操作。</p>
 
               <div className="mt-8 rounded-[1.5rem] bg-transparent p-0 md:p-0">
                 <FilterBar filters={filters} onChange={setFilters} />
