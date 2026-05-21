@@ -1,0 +1,55 @@
+import type { Restaurant } from "@/types/restaurant";
+
+export const mockRestaurants: Restaurant[] = [
+  {
+    id: "1",
+    name: "沙县小吃",
+    source: "manual",
+    address: "政高路附近",
+    distanceMeters: 420,
+    tags: ["不辣", "面食", "出餐快"],
+    isFrequent: true,
+  },
+  {
+    id: "2",
+    name: "麦当劳",
+    source: "amap",
+    address: "三门路附近",
+    distanceMeters: 380,
+    tags: ["汉堡", "快餐"],
+    isFavorite: true,
+  },
+  {
+    id: "3",
+    name: "肯德基",
+    source: "amap",
+    address: "政立路附近",
+    distanceMeters: 650,
+    tags: ["汉堡", "快餐"],
+  },
+  {
+    id: "4",
+    name: "萨莉亚",
+    source: "amap",
+    address: "国霞路附近",
+    distanceMeters: 720,
+    tags: ["简餐", "不辣"],
+  },
+  {
+    id: "5",
+    name: "兰州拉面",
+    source: "amap",
+    address: "政高路附近",
+    distanceMeters: 510,
+    tags: ["面食", "清淡"],
+  },
+  {
+    id: "6",
+    name: "轻食沙拉",
+    source: "manual",
+    address: "公司楼下商铺",
+    distanceMeters: 180,
+    tags: ["清淡", "轻食", "不辣"],
+    isFavorite: true,
+  },
+];
