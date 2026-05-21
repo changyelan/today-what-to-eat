@@ -1,22 +1,16 @@
 import { normalizeAmapRestaurant, type AmapPoi } from "@/lib/amap";
-import { OFFICE_ADDRESS } from "@/lib/constants";
+import { OFFICE_LOCATION } from "@/lib/constants";
 
 const AMAP_KEY = process.env.AMAP_WEB_SERVICE_KEY;
 
-async function geocodeAddress(address: string) {
-  const url = new URL("https://restapi.amap.com/v3/geocode/geo");
-  url.searchParams.set("key", AMAP_KEY || "");
-  url.searchParams.set("address", address);
+const RESTAURANT_CACHE_TTL_MS = 10 * 60 * 1000;
 
-  const response = await fetch(url.toString(), { cache: "no-store" });
-  if (!response.ok) throw new Error("高德地理编码请求失败");
-
-  const data = await response.json();
-  const first = data?.geocodes?.[0];
-  if (!first?.location) throw new Error("未能解析公司地址坐标");
-
-  return first.location as string;
-}
+let cachedResult:
+  | {
+      expiresAt: number;
+      value: { restaurants: ReturnType<typeof normalizeAmapRestaurant>[]; officeLocation: string };
+    }
+  | null = null;
 
 async function searchNearbyRestaurants(location: string) {
   const url = new URL("https://restapi.amap.com/v3/place/around");
@@ -29,7 +23,9 @@ async function searchNearbyRestaurants(location: string) {
   url.searchParams.set("extensions", "base");
   url.searchParams.set("types", "050000");
 
-  const response = await fetch(url.toString(), { cache: "no-store" });
+  const response = await fetch(url.toString(), {
+    next: { revalidate: 600 },
+  });
   if (!response.ok) throw new Error("高德周边搜索请求失败");
 
   const data = await response.json();
@@ -41,9 +37,19 @@ export async function getNearbyRestaurants() {
     throw new Error("缺少 AMAP_WEB_SERVICE_KEY 环境变量");
   }
 
-  const location = await geocodeAddress(OFFICE_ADDRESS);
+  if (cachedResult && cachedResult.expiresAt > Date.now()) {
+    return cachedResult.value;
+  }
+
+  const location = OFFICE_LOCATION;
   const pois = await searchNearbyRestaurants(location);
   const restaurants = pois.map(normalizeAmapRestaurant).filter((item) => item.name && item.address);
 
-  return { restaurants, officeLocation: location };
+  const result = { restaurants, officeLocation: location };
+  cachedResult = {
+    expiresAt: Date.now() + RESTAURANT_CACHE_TTL_MS,
+    value: result,
+  };
+
+  return result;
 }
